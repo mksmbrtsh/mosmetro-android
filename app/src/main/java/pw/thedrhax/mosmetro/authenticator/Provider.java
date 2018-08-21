@@ -95,7 +95,12 @@ public abstract class Provider extends LinkedList<Task> {
      * @see Client
      */
     @NonNull public static Provider find(Context context, ParsedResponse response) {
-        if (MosMetroV3.match(response)) return new MosMetroV3(context);
+        if (MosMetroV3.match(response)) {
+            if (PreferenceManager.getDefaultSharedPreferences(context).getBoolean("pref_mosmetro_v3", true))
+                return new MosMetroV3(context);
+            else
+                return new MosMetroV2(context);
+        }
         else if (MosMetroV2.match(response)) return new MosMetroV2(context);
         else if (MosMetroV1.match(response)) return new MosMetroV1(context);
         else if (Enforta.match(response)) return new Enforta(context);

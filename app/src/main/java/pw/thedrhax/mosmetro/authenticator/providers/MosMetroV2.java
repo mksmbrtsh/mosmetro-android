@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Patterns;
 
 import org.json.simple.JSONObject;
@@ -93,6 +94,31 @@ public class MosMetroV2 extends Provider {
                     ));
                     vars.put("result", RESULT.NOT_REGISTERED);
                     return false;
+                }
+                return true;
+            }
+        });
+
+        /**
+         * Checking for bad redirect
+         * redirect ~= welcome.wi-fi.ru
+         */
+        if (!PreferenceManager.getDefaultSharedPreferences(context).getBoolean("pref_mosmetro_v3", true))
+        add(new Task() {
+            @Override
+            public boolean run(HashMap<String, Object> vars) {
+                if (redirect.contains("welcome.wi-fi.ru")) {
+                    Logger.log(Logger.LEVEL.DEBUG, "Found redirect to welcome.wi-fi.ru!");
+                    try {
+                        client.get(redirect, null, pref_retry_count);
+                        Logger.log(Logger.LEVEL.DEBUG, client.response().getPage());
+                    } catch (IOException ex) {
+                        Logger.log(Logger.LEVEL.DEBUG, ex);
+                    }
+                    redirect = Uri.parse(redirect).buildUpon()
+                            .authority("auth.wi-fi.ru")
+                            .build().toString();
+                    Logger.log(Logger.LEVEL.DEBUG, redirect);
                 }
                 return true;
             }
