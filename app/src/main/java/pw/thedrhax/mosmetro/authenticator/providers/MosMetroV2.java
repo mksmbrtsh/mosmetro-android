@@ -384,8 +384,6 @@ public class MosMetroV2 extends Provider {
             }
         }
 
-        return redirect.contains(".wi-fi.ru")
-                && !redirect.contains("login.wi-fi.ru")
-                && !redirect.contains("welcome.wi-fi.ru");
+        return redirect.contains(".wi-fi.ru") && !redirect.contains("login.wi-fi.ru");
     }
 }
